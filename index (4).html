@@ -1,0 +1,656 @@
+
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Basavachetan Dadge - Portfolio</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+    <style>
+      :root {
+        --accent: #ef4444;
+        --bg: #000000;
+        --text: #fee2e2;
+      }
+      body {
+        background-color: var(--bg);
+        color: var(--text);
+        font-family: 'Inter', sans-serif;
+        overflow-x: hidden;
+      }
+      h1, h2, h3, h4, h5, h6, .font-serif {
+        font-family: 'Playfair Display', serif;
+      }
+      
+      /* Custom Scrollbar */
+      ::-webkit-scrollbar {
+        width: 10px;
+      }
+      ::-webkit-scrollbar-track {
+        background: var(--bg);
+      }
+      ::-webkit-scrollbar-thumb {
+        background: rgba(255,255,255,0.1);
+        border-radius: 5px;
+      }
+      ::-webkit-scrollbar-thumb:hover {
+        background: var(--accent);
+      }
+
+      /* Animations */
+      .reveal {
+        opacity: 0;
+        transform: translateY(30px);
+        transition: all 0.8s ease-out;
+      }
+      .reveal.active {
+        opacity: 1;
+        transform: translateY(0);
+      }
+      
+      .card {
+        background-color: rgba(17, 24, 39, 0.6);
+        border: 1px solid rgba(255,255,255,0.05);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
+        transition: all 0.3s ease;
+      }
+      
+      .bg-grid {
+        position: fixed;
+        inset: 0;
+        z-index: -3;
+        pointer-events: none;
+        background-size: 40px 40px;
+        background-image: linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+                          linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+        mask-image: linear-gradient(to bottom, transparent, black, transparent);
+        -webkit-mask-image: linear-gradient(to bottom, transparent, black, transparent);
+      }
+      
+      .text-gradient {
+        background: linear-gradient(to right, #ffffff, var(--accent));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        color: transparent;
+      }
+      
+      /* 3D Tilt Effect & Zoom */
+      .tilt-card {
+        transform-style: preserve-3d;
+        transform: perspective(1000px);
+        transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+      }
+      .tilt-card:hover {
+        border-color: var(--accent);
+        box-shadow: 0 15px 35px -10px var(--accent);
+        transform: perspective(1000px) scale3d(1.02, 1.02, 1.02) !important;
+      }
+      
+      /* Experience Border Glow & Gradient */
+      .exp-card {
+        position: relative;
+        overflow: hidden;
+        border: 1px solid transparent;
+        background-clip: padding-box;
+      }
+      .exp-card::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        border-radius: inherit;
+        padding: 1px;
+        background: linear-gradient(to bottom right, var(--accent), transparent);
+        -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+        -webkit-mask-composite: xor;
+        mask-composite: exclude;
+        opacity: 0.3;
+        transition: opacity 0.3s ease;
+      }
+      .exp-card:hover::before {
+        opacity: 1;
+      }
+      .exp-card::after {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        width: 3px;
+        background: var(--accent);
+        transform: scaleY(0);
+        transform-origin: top;
+        transition: transform 0.5s ease;
+      }
+      .exp-card:hover::after {
+        transform: scaleY(1);
+      }
+
+      /* Button Glow */
+      .btn-glow {
+        position: relative;
+      }
+      .btn-glow::after {
+        content: '';
+        position: absolute;
+        inset: -2px;
+        background: var(--accent);
+        filter: blur(10px);
+        opacity: 0;
+        transition: opacity 0.3s ease;
+        z-index: -1;
+        border-radius: inherit;
+      }
+      .btn-glow:hover::after {
+        opacity: 0.6;
+      }
+
+      /* Skill Tag Hover */
+      .skill-tag {
+        transition: all 0.3s ease;
+      }
+      .skill-tag:hover {
+        background-color: var(--accent);
+        color: #000;
+        box-shadow: 0 0 15px var(--accent);
+        transform: translateY(-2px);
+      }
+
+      /* Canvas Background */
+      #canvas-container {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        z-index: -2;
+        pointer-events: none;
+      }
+      
+      /* Glowing Orbs */
+      .orb {
+        position: fixed;
+        border-radius: 50%;
+        filter: blur(80px);
+        z-index: -1;
+        opacity: 0.15;
+        pointer-events: none;
+        animation: float 20s infinite ease-in-out alternate;
+      }
+      .orb-1 {
+        width: 400px;
+        height: 400px;
+        background: var(--accent);
+        top: -100px;
+        left: -100px;
+      }
+      .orb-2 {
+        width: 300px;
+        height: 300px;
+        background: var(--accent);
+        bottom: -50px;
+        right: -50px;
+        animation-delay: -10s;
+      }
+      
+      @keyframes float {
+        0% { transform: translate(0, 0) scale(1); }
+        100% { transform: translate(100px, 50px) scale(1.2); }
+      }
+
+      /* Typing Cursor */
+      .typing-cursor {
+        display: inline-block;
+        width: 3px;
+        height: 1em;
+        background-color: var(--accent);
+        margin-left: 4px;
+        animation: blink 1s step-end infinite;
+        vertical-align: middle;
+      }
+      @keyframes blink {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0; }
+      }
+    </style>
+</head>
+<body class="antialiased selection:bg-[var(--accent)] selection:text-white">
+    <div class="bg-grid"></div>
+    <canvas id="canvas-container"></canvas>
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+
+    <!-- Navigation -->
+    <nav class="fixed top-0 w-full z-50 backdrop-blur-md border-b border-white/10 bg-black/50 transition-all duration-300" id="navbar">
+      <div class="max-w-6xl mx-auto px-6 py-4 flex justify-between items-center">
+        <a href="#" class="text-xl font-bold font-serif tracking-wider">Basavachetan</a>
+        <div class="hidden md:flex gap-8 text-sm font-medium">
+          <a href="#about" class="hover:text-[var(--accent)] transition-colors">About</a>
+          <a href="#skills" class="hover:text-[var(--accent)] transition-colors">Skills</a>
+          <a href="#experience" class="hover:text-[var(--accent)] transition-colors">Experience</a>
+          <a href="#projects" class="hover:text-[var(--accent)] transition-colors">Projects</a>
+        </div>
+        <div class="flex gap-4">
+          <a href="https://github.com/21Chetan-commits" target="_blank" class="hover:text-[var(--accent)] transition-colors"><svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path fill-rule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" clip-rule="evenodd"></path></svg></a>
+          <a href="https://www.linkedin.com/in/basavachetan-dadge-a50048296/" target="_blank" class="hover:text-[var(--accent)] transition-colors"><svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path fill-rule="evenodd" d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z" clip-rule="evenodd"></path></svg></a>
+        </div>
+      </div>
+    </nav>
+
+    <main class="max-w-5xl mx-auto px-6 pt-32 pb-20 space-y-32">
+        
+        <!-- Hero Section -->
+        <section id="about" class="min-h-[70vh] flex flex-col justify-center reveal">
+            
+            <p class="text-[var(--accent)] font-medium tracking-wider uppercase mb-4">Hello, I'm</p>
+            <h1 class="text-6xl md:text-8xl font-bold mb-6 tracking-tight text-gradient drop-shadow-sm">Basavachetan Dadge</h1>
+            <h2 class="text-3xl md:text-5xl font-serif text-[var(--accent)] mb-8 h-[1.2em]">
+              <span id="typing-text"></span><span class="typing-cursor"></span>
+            </h2>
+            <p class="text-lg md:text-xl leading-relaxed opacity-80 max-w-3xl mb-10">BBA graduate with hands-on experience in SQL-driven reporting and dashboard development. Built BI dashboards using SQL, Tableau Python, and Excel to support KPI tracking and reporting accuracy. Interested in Business Analyst roles within operations focused environments.</p>
+            
+            <div class="flex flex-wrap gap-6 items-center mb-12">
+              <div class="flex items-center gap-2 opacity-70"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>Bidar, Karnataka</div>
+              <div class="flex items-center gap-2 opacity-70"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>basavachetandadge4@gmail.com</div>
+              <div class="flex items-center gap-2 opacity-70"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path></svg>+91 6362643644</div>
+            </div>
+
+            <div class="flex gap-4">
+              <a href="mailto:basavachetandadge4@gmail.com" class="btn-glow px-8 py-4 bg-[var(--accent)] text-white font-medium rounded-full hover:scale-105 transition-transform">Get In Touch</a>
+              <a href="#experience" class="px-8 py-4 border border-[var(--accent)] text-[var(--accent)] font-medium rounded-full hover:bg-[var(--accent)] hover:text-white transition-colors">View Work</a>
+            </div>
+        </section>
+
+        
+        <!-- Skills Section -->
+        <section id="skills" class="reveal pt-20">
+            <h3 class="text-4xl font-bold mb-12 flex items-center gap-4">
+              <span class="w-8 h-[2px] bg-[var(--accent)]"></span> Skills
+            </h3>
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                
+                    <div class="card p-6 rounded-2xl tilt-card">
+                        <h4 class="text-xl font-bold mb-4 text-[var(--accent)]">Data Querying & Manipulation</h4>
+                        <div class="flex flex-wrap gap-2">
+                            <span class="skill-tag text-sm px-3 py-1 rounded-full border border-white/20 bg-white/5">SQL</span><span class="skill-tag text-sm px-3 py-1 rounded-full border border-white/20 bg-white/5">Python</span>
+                        </div>
+                    </div>
+                
+                    <div class="card p-6 rounded-2xl tilt-card">
+                        <h4 class="text-xl font-bold mb-4 text-[var(--accent)]">Business Intelligence & Reporting Tools</h4>
+                        <div class="flex flex-wrap gap-2">
+                            <span class="skill-tag text-sm px-3 py-1 rounded-full border border-white/20 bg-white/5">MS Excel</span><span class="skill-tag text-sm px-3 py-1 rounded-full border border-white/20 bg-white/5">Power BI</span><span class="skill-tag text-sm px-3 py-1 rounded-full border border-white/20 bg-white/5">Tableau</span>
+                        </div>
+                    </div>
+                
+                    <div class="card p-6 rounded-2xl tilt-card">
+                        <h4 class="text-xl font-bold mb-4 text-[var(--accent)]">Data Analysis & Reporting</h4>
+                        <div class="flex flex-wrap gap-2">
+                            <span class="skill-tag text-sm px-3 py-1 rounded-full border border-white/20 bg-white/5">Data Cleaning</span><span class="skill-tag text-sm px-3 py-1 rounded-full border border-white/20 bg-white/5">KPI Tracking</span><span class="skill-tag text-sm px-3 py-1 rounded-full border border-white/20 bg-white/5">Dashboard Development</span><span class="skill-tag text-sm px-3 py-1 rounded-full border border-white/20 bg-white/5">Report Automation</span>
+                        </div>
+                    </div>
+                
+            </div>
+        </section>
+        
+
+        
+        <!-- Experience Section -->
+        <section id="experience" class="reveal pt-20">
+            <h3 class="text-4xl font-bold mb-12 flex items-center gap-4">
+              <span class="w-8 h-[2px] bg-[var(--accent)]"></span> Experience
+            </h3>
+            <div class="space-y-8 pl-4 border-l border-[var(--accent)]/30">
+                
+                    <div class="card p-8 rounded-2xl exp-card ml-4 relative">
+                        <div class="absolute -left-[21px] top-10 w-3 h-3 rounded-full bg-[var(--accent)] shadow-[0_0_10px_var(--accent)]"></div>
+                        <div class="flex flex-col md:flex-row md:justify-between md:items-start mb-4 gap-4">
+                          <div>
+                            <h4 class="text-2xl font-bold">Freelance Data Analytics Project – Retail GST & Sales Reporting</h4>
+                            <div class="text-lg text-[var(--accent)] font-medium mt-1">Local Retail Business</div>
+                          </div>
+                          <span class="px-4 py-1 rounded-full text-sm font-medium border border-[var(--accent)] text-[var(--accent)] bg-[var(--accent)]/10 whitespace-nowrap">
+                            Jan 2026 (1 Month)
+                          </span>
+                        </div>
+                        <ul class="space-y-3 mt-6 opacity-80 list-none">
+                          
+                            <li class="flex gap-3">
+                              <span class="text-[var(--accent)] mt-1">▹</span>
+                              <span>Owned end-to-end reporting framework for a retail business, replacing manual Excel-based GST tracking with an automated dashboard.</span>
+                            </li>
+                          
+                            <li class="flex gap-3">
+                              <span class="text-[var(--accent)] mt-1">▹</span>
+                              <span>Wrote SQL queries to extract and aggregate invoice-level data using joins and GROUP BY functions to calculate monthly sales, GST liability (CGST/SGST), invoice count, and average invoice value.</span>
+                            </li>
+                          
+                            <li class="flex gap-3">
+                              <span class="text-[var(--accent)] mt-1">▹</span>
+                              <span>Cleaned and validated raw Excel/CSV datasets by handling missing values, duplicates, and structural inconsistencies to ensure accuracy.</span>
+                            </li>
+                          
+                            <li class="flex gap-3">
+                              <span class="text-[var(--accent)] mt-1">▹</span>
+                              <span>Built KPI dashboards to track revenue trends, customer contribution, and seasonal patterns for monthly business review.</span>
+                            </li>
+                          
+                            <li class="flex gap-3">
+                              <span class="text-[var(--accent)] mt-1">▹</span>
+                              <span>Standardized recurring calculations and reduced manual reporting effort through dashboard automation.</span>
+                            </li>
+                          
+                        </ul>
+                    </div>
+                
+            </div>
+        </section>
+        
+
+        
+        <!-- Projects Section -->
+        <section id="projects" class="reveal pt-20">
+            <h3 class="text-4xl font-bold mb-12 flex items-center gap-4">
+              <span class="w-8 h-[2px] bg-[var(--accent)]"></span> Featured Projects
+            </h3>
+            <div class="grid md:grid-cols-2 gap-8">
+                
+                    <div class="card p-8 rounded-2xl tilt-card flex flex-col h-full">
+                        <div class="flex justify-between items-start mb-4">
+                          <h4 class="text-2xl font-bold">E-commerce Revenue & Operations Analysis Project</h4>
+                          <svg class="w-6 h-6 text-[var(--accent)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path></svg>
+                        </div>
+                        <p class="opacity-80 mb-8 flex-grow leading-relaxed">Designed and maintained a Power BI dashboard to track weekly and monthly KPIs including Total Revenue ($91.8M), YoY growth (+25%), quarterly trends, and category contribution. Developed interactive reports with slicers and drill-down features for stakeholder self-serve analysis. Performed data validation using Python (Pandas).</p>
+                        <div class="flex flex-wrap gap-2 mt-auto pt-4 border-t border-white/10">
+                            <span class="text-xs font-mono text-[var(--accent)]">Power BI</span><span class="opacity-30">•</span><span class="text-xs font-mono text-[var(--accent)]">DAX</span><span class="opacity-30">•</span><span class="text-xs font-mono text-[var(--accent)]">Power Query</span><span class="opacity-30">•</span><span class="text-xs font-mono text-[var(--accent)]">Python</span><span class="opacity-30">•</span><span class="text-xs font-mono text-[var(--accent)]">Pandas</span>
+                        </div>
+                    </div>
+                
+            </div>
+        </section>
+        
+
+        <div class="grid md:grid-cols-2 gap-12 reveal pt-20">
+          
+          <!-- Education Section -->
+          <section id="education">
+              <h3 class="text-3xl font-bold mb-8 flex items-center gap-4">
+                <span class="w-6 h-[2px] bg-[var(--accent)]"></span> Education
+              </h3>
+              <div class="space-y-6">
+                  
+                      <div class="card p-6 rounded-2xl tilt-card">
+                          <h4 class="text-xl font-bold">Bachelor of Business Administration (BBA)</h4>
+                          <div class="text-[var(--accent)] mt-1">Gulbarga University – Kalaburagi, Karnataka</div>
+                          <div class="text-sm opacity-60 mt-2">2022 – 2025</div>
+                      </div>
+                  
+              </div>
+          </section>
+          
+
+          <div class="space-y-12">
+            
+            <!-- Certifications Section -->
+            <section id="certifications">
+                <h3 class="text-3xl font-bold mb-8 flex items-center gap-4">
+                  <span class="w-6 h-[2px] bg-[var(--accent)]"></span> Certifications
+                </h3>
+                <div class="space-y-4">
+                    
+                        <div class="card p-5 rounded-xl flex justify-between items-center tilt-card">
+                            <div>
+                              <h4 class="font-bold">Data Visualization & Business Reporting</h4>
+                              <div class="text-sm text-[var(--accent)]">Tata Consultancy Services (Forage)</div>
+                            </div>
+                            <div class="text-sm opacity-60">2025</div>
+                        </div>
+                    
+                        <div class="card p-5 rounded-xl flex justify-between items-center tilt-card">
+                            <div>
+                              <h4 class="font-bold">Data Analytics & Forensic Analysis</h4>
+                              <div class="text-sm text-[var(--accent)]">Deloitte Australia (Forage)</div>
+                            </div>
+                            <div class="text-sm opacity-60">2025</div>
+                        </div>
+                    
+                        <div class="card p-5 rounded-xl flex justify-between items-center tilt-card">
+                            <div>
+                              <h4 class="font-bold">Microsoft Excel & PowerPoint Proficiency</h4>
+                              <div class="text-sm text-[var(--accent)]">None</div>
+                            </div>
+                            <div class="text-sm opacity-60">2025</div>
+                        </div>
+                    
+                </div>
+            </section>
+            
+
+            
+          </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="border-t border-white/10 mt-20 py-20 text-center reveal">
+      <p class="text-[var(--accent)] font-medium tracking-wider uppercase mb-2">SAY HELLO</p>
+      <h2 class="text-5xl md:text-7xl font-serif font-bold mb-6">Let's Work<br/>Together.</h2>
+      <div class="flex justify-center gap-6 mb-12 mt-10">
+        <a href="mailto:basavachetandadge4@gmail.com" class="p-4 rounded-full card hover:text-[var(--accent)] hover:border-[var(--accent)] transition-all tilt-card"><svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg></a>
+        <a href="https://github.com/21Chetan-commits" target="_blank" class="p-4 rounded-full card hover:text-[var(--accent)] hover:border-[var(--accent)] transition-all tilt-card"><svg class="w-8 h-8" fill="currentColor" viewBox="0 0 24 24"><path fill-rule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" clip-rule="evenodd"></path></svg></a>
+        <a href="https://www.linkedin.com/in/basavachetan-dadge-a50048296/" target="_blank" class="p-4 rounded-full card hover:text-[var(--accent)] hover:border-[var(--accent)] transition-all tilt-card"><svg class="w-8 h-8" fill="currentColor" viewBox="0 0 24 24"><path fill-rule="evenodd" d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z" clip-rule="evenodd"></path></svg></a>
+      </div>
+      <div class="flex flex-col items-center gap-2 mt-8">
+        <p class="opacity-50 text-sm">© 2026 Basavachetan Dadge. All rights reserved.</p>
+      </div>
+    </footer>
+
+    <script>
+      document.addEventListener('DOMContentLoaded', () => {
+        try {
+          // 1. Scroll Reveal Animation
+          const revealElements = document.querySelectorAll('.reveal');
+          const revealOptions = { threshold: 0.1, rootMargin: "0px 0px -50px 0px" };
+          
+          const revealOnScroll = new IntersectionObserver(function(entries, observer) {
+            entries.forEach(entry => {
+              if (!entry.isIntersecting) return;
+              entry.target.classList.add('active');
+              observer.unobserve(entry.target);
+            });
+          }, revealOptions);
+          
+          revealElements.forEach(el => revealOnScroll.observe(el));
+          
+          // Trigger initial reveal for elements already in viewport
+          setTimeout(() => {
+            revealElements.forEach(el => {
+              const rect = el.getBoundingClientRect();
+              if(rect.top < window.innerHeight) {
+                el.classList.add('active');
+              }
+            });
+          }, 100);
+
+          // 2. Typing Animation
+          const titles = ["Data Analyst","Business Analyst"];
+          const typingElement = document.getElementById('typing-text');
+          let titleIndex = 0;
+          let charIndex = 0;
+          let isDeleting = false;
+          let typingDelay = 100;
+          
+          function type() {
+            if (!typingElement) return;
+            const currentTitle = titles[titleIndex];
+            
+            if (isDeleting) {
+              typingElement.textContent = currentTitle.substring(0, charIndex - 1);
+              charIndex--;
+              typingDelay = 50;
+            } else {
+              typingElement.textContent = currentTitle.substring(0, charIndex + 1);
+              charIndex++;
+              typingDelay = 100;
+            }
+            
+            if (!isDeleting && charIndex === currentTitle.length) {
+              isDeleting = true;
+              typingDelay = 2000; // Pause at end
+            } else if (isDeleting && charIndex === 0) {
+              isDeleting = false;
+              titleIndex = (titleIndex + 1) % titles.length;
+              typingDelay = 500; // Pause before typing next
+            }
+            
+            setTimeout(type, typingDelay);
+          }
+          
+          if(typingElement) {
+            setTimeout(type, 1000);
+          }
+
+          // 3. 3D Tilt Effect
+          const tiltCards = document.querySelectorAll('.tilt-card');
+          tiltCards.forEach(card => {
+            card.addEventListener('mousemove', e => {
+              const rect = card.getBoundingClientRect();
+              const x = e.clientX - rect.left;
+              const y = e.clientY - rect.top;
+              const centerX = rect.width / 2;
+              const centerY = rect.height / 2;
+              const rotateX = ((y - centerY) / centerY) * -10;
+              const rotateY = ((x - centerX) / centerX) * 10;
+              
+              card.style.transform = 'perspective(1000px) rotateX(' + rotateX + 'deg) rotateY(' + rotateY + 'deg) scale3d(1.02, 1.02, 1.02)';
+            });
+            
+            card.addEventListener('mouseleave', () => {
+              card.style.transform = 'perspective(1000px) rotateX(0) rotateY(0) scale3d(1, 1, 1)';
+            });
+          });
+
+          // 4. Canvas Stars Background
+          const canvas = document.getElementById('canvas-container');
+          if (canvas) {
+            const ctx = canvas.getContext('2d');
+            let width, height;
+            let stars = [];
+            const isDarkTheme = true;
+            
+            function resize() {
+              width = canvas.width = window.innerWidth;
+              height = canvas.height = window.innerHeight;
+            }
+            
+            class Star {
+              constructor() {
+                this.x = Math.random() * width;
+                this.y = Math.random() * height;
+                this.size = Math.random() * 1.5;
+                this.speedY = Math.random() * 0.5 + 0.1;
+                this.opacity = Math.random();
+                this.fadeSpeed = Math.random() * 0.02 + 0.005;
+                this.fadingOut = Math.random() > 0.5;
+              }
+              
+              update() {
+                this.y -= this.speedY;
+                if (this.y < 0) {
+                  this.y = height;
+                  this.x = Math.random() * width;
+                }
+                
+                if (this.fadingOut) {
+                  this.opacity -= this.fadeSpeed;
+                  if (this.opacity <= 0.1) this.fadingOut = false;
+                } else {
+                  this.opacity += this.fadeSpeed;
+                  if (this.opacity >= 1) this.fadingOut = true;
+                }
+              }
+              
+              draw() {
+                ctx.fillStyle = isDarkTheme 
+                  ? 'rgba(255, 255, 255, ' + this.opacity + ')' 
+                  : 'rgba(0, 0, 0, ' + (this.opacity * 0.3) + ')';
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+              }
+            }
+            
+            function initStars() {
+              stars = [];
+              const numStars = Math.floor((width * height) / 10000);
+              for (let i = 0; i < numStars; i++) {
+                stars.push(new Star());
+              }
+            }
+            
+            function animateStars() {
+              ctx.clearRect(0, 0, width, height);
+              stars.forEach(star => {
+                star.update();
+                star.draw();
+              });
+              requestAnimationFrame(animateStars);
+            }
+            
+            window.addEventListener('resize', () => {
+              resize();
+              initStars();
+            });
+            
+            resize();
+            initStars();
+            animateStars();
+          }
+
+          // 5. Navbar Scroll Effect & Smooth Scrolling
+          const navbar = document.getElementById('navbar');
+          if (navbar) {
+            window.addEventListener('scroll', () => {
+              if (window.scrollY > 50) {
+                navbar.classList.add('shadow-lg');
+                navbar.classList.replace('bg-black/50', 'bg-black/80');
+              } else {
+                navbar.classList.remove('shadow-lg');
+                navbar.classList.replace('bg-black/80', 'bg-black/50');
+              }
+            });
+          }
+
+          // Smooth scrolling for anchor links
+          document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+              e.preventDefault();
+              const targetId = this.getAttribute('href');
+              if (targetId === '#') return;
+              
+              const targetElement = document.querySelector(targetId);
+              if (targetElement) {
+                const navbarHeight = navbar ? navbar.offsetHeight : 0;
+                const targetPosition = targetElement.getBoundingClientRect().top + window.pageYOffset - navbarHeight - 20;
+                
+                window.scrollTo({
+                  top: targetPosition,
+                  behavior: 'smooth'
+                });
+              }
+            });
+          });
+        } catch (error) {
+          console.error('Animation script error:', error);
+          // Fallback: make all reveal elements visible if script fails
+          document.querySelectorAll('.reveal').forEach(el => el.classList.add('active'));
+        }
+      });
+    </script>
+</body>
+</html>
